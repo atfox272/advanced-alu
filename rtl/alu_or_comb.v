@@ -1,4 +1,4 @@
-module alu_or_comb_dynamic (
+module alu_or_comb (
     input  wire [31:0] din,
     input  wire [2:0]  funct,     
     output reg  [31:0] res
