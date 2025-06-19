@@ -1,4 +1,9 @@
-module alu (
+module alu #(
+    parameter DATA_W    = 32,
+    parameter CRC_KEY_W = 8
+) (
+    input               clk,
+    input               rst,
     input               valid_i,
     input       [3:0]   opcode,
     input       [2:0]   funct,
@@ -25,8 +30,8 @@ module alu (
 
     // Logic Unit
     alu_logic logic (
-        .a          (a), 
-        .b          (b), 
+        .inA        (a), 
+        .inB        (b), 
         .funct      (funct),
         .out        (out_Logic)
     );
@@ -36,63 +41,73 @@ module alu (
         .a          (a),
         .b          (b),
         .funct      (funct),
-        .out        (out_Comp)
+        .out        (out_Comp[0])
     );
 
     // Shift Unit
     alu_shift shifter (
+        .clk        (clk),
+        .reset      (rst),      
         .a          (a),
         .b          (b),
         .funct      (funct),
         .valid_i    (valid_i),
-        .O          (out_Shift),
+        .result     (out_Shift),
         .valid_o    (valid_Shift)
     );
 
     // Bit Count Unit
     alu_bitcnt bitcnt (
         .inA        (a),
-        .count      (out_BitCnt)
+        .count      (out_BitCnt[5:0])
     );
 
-    // // Reverse Unit
-    // Reverse reverse_inst (
-    //     .a(a), .funct(funct),
-    //     .O(out_Reverse)
-    // );
+    // Reverse Unit
+    alu_rvs reverse (
+        .din        (a),
+        .funct      (funct[2:0]),
+        .res        (out_Reverse)
+    );
 
-    // // Or-combine Unit
-    // OrComb orcomb_inst (
-    //     .a(a), .funct(funct),
-    //     .O(out_OrComb)
-    // );
+    // Or-combine Unit
+    alu_or_comb orcomb (
+        .din        (a),
+        .funct      (funct[2:0]),
+        .res        (out_OrComb)
+    );
 
-    // // Shuffle Unit
-    // Shuffle shuffle_inst (
-    //     .a(a), .funct(funct),
-    //     .O(out_Shuffle)
-    // );
+    // Shuffle Unit
+    alu_shuffle shuffle (
+        .din    (a),
+        .funct  (funct),
+        .mode   (1'b0),
+        .res    (out_Shuffle)
+    );
 
-    // // Unshuffle Unit
-    // Unshuffle unshuffle_inst (
-    //     .a(a), .funct(funct),
-    //     .O(out_Unshuffle)
-    // );
+    // Unshuffle Unit
+    alu_shuffle unshuffle (
+        .din    (a),
+        .funct  (funct),
+        .mode   (1'b1),
+        .res    (out_Shuffle)
+    );
 
     // Multiplier Unit (possibly carry-less)
     alu_mult mult (
-        .a  (a),
-        .b  (b),
-        .o  (out_Mult)
+        .a          (a),
+        .b          (b),
+        .o          (out_Mult)
     );
 
     // CRC Unit
-    alu_crc crc_inst (
-        .a(a),
-        .b(b),
-        .funct(funct),
-        .valid_i(valid_i),
-        .O(out_CRC)
+    alu_crc #(
+        .DATA_W     (DATA_W),
+        .KEY_W      (CRC_KEY_W)
+    ) crc (
+        .data       (a),
+        .key        (b[CRC_KEY_W-1:0]),
+        .funct      (funct[0]),
+        .o          (out_CRC)
     );
 
     // Output multiplexer
@@ -100,9 +115,9 @@ module alu (
         case (opcode)
             4'b0000: o = out_Arith;
             4'b0001: o = out_Logic;
-            4'b0010: o = out_Comp;
+            4'b0010: o = {31'b0, out_Comp[0]};
             4'b0011: o = out_Shift;
-            4'b0100: o = out_BitCnt;
+            4'b0100: o = {26'b0, out_BitCnt[5:0]};
             4'b0101: o = out_Reverse;
             4'b0110: o = out_OrComb;
             4'b0111: o = out_Shuffle;

@@ -17,7 +17,7 @@ module alu_shift (
     reg [63:0] funnel_reg;
     reg [4:0] shift_count;
     
-    always @(posedge clk or posedge reset) begin
+    always @(posedge clk) begin
         if (reset) begin
             result <= 0;
             valid_o <= 0;
