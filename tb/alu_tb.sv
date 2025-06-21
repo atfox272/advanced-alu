@@ -89,6 +89,8 @@ module alu_tb;
         apply_test(4'b0010, 3'b010, 32'h0000000A, 32'h00000002, "Compare(UGT)");  // unsigned greater than
         apply_test(4'b0011, 3'b010, 32'h000000F0, 32'h00000004, "Shift(SRA)");    // sra
         apply_test(4'b1001, 3'b000, 32'h0000000F, 32'h00000007, "Mult");     // carry-less mult
+        apply_test(4'b1001, 3'b000, 32'hFFFFFFFF, 32'hFFFFFFFF, "Mult");     // carry-less mult
+        apply_test(4'b1001, 3'b000, 32'h00000000, 32'h00000000, "Mult");     // carry-less mult
         apply_test(4'b1010, 3'b000, 32'hDEADBEEF, 32'h00000000, "CRC");      // CRC
 
         // Finish simulation

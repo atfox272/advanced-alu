@@ -89,7 +89,7 @@ module alu #(
         .din    (a),
         .funct  (funct),
         .mode   (1'b1),
-        .res    (out_Shuffle)
+        .res    (out_Unshuffle)
     );
 
     // Multiplier Unit (possibly carry-less)

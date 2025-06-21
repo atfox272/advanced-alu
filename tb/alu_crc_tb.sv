@@ -32,19 +32,19 @@ module alu_crc_tb;
         #10;
         $display("Test 1 - CRC error detection: funct=0x%1b data=0x%h, key=0x%h, o=0x%h", funct, data, key, o);
 
-        // Test 2: CRC join
+        // Test 2: CRC appending
         data  = 32'b100100;
         key   = 8'b1101;
         funct = 1'b1;
         #10;
         $display("Test 2 - CRC join: funct=0x%1b data=0x%h, key=0x%h, o=0x%h", funct, data, key, o);
 
-        // // Test 3: All zeros
-        // data  = 32'h00000000;
-        // key   = 8'h00;
-        // funct = 1'b0;
-        // #10;
-        // $display("Test 3 - All zeros: funct=0x%1b data=0x%h, key=0x%h, o=0x%h", funct, data, key, o);
+        // Test 3: All zeros
+        data  = 32'h00000000;
+        key   = 8'h00;
+        funct = 1'b0;
+        #10;
+        $display("Test 3 - All zeros: funct=0x%1b data=0x%h, key=0x%h, o=0x%h", funct, data, key, o);
 
         // // Test 4: All ones
         // data  = 32'hFFFFFFFF;
